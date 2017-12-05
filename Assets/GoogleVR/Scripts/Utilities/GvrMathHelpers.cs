@@ -35,9 +35,9 @@ public static class GvrMathHelpers {
   public static Vector2 GetViewportCenter() {
     int viewportWidth = Screen.width;
     int viewportHeight = Screen.height;
-    if (VRSettings.enabled) {
-      viewportWidth = VRSettings.eyeTextureWidth;
-      viewportHeight = VRSettings.eyeTextureHeight;
+    if (UnityEngine.XR.XRSettings.enabled) {
+      viewportWidth = UnityEngine.XR.XRSettings.eyeTextureWidth;
+      viewportHeight = UnityEngine.XR.XRSettings.eyeTextureHeight;
     }
 
     return new Vector2(0.5f * viewportWidth, 0.5f * viewportHeight);

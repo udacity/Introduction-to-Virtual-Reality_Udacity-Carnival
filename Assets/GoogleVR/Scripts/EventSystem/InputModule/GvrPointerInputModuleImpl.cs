@@ -60,7 +60,7 @@ public class GvrPointerInputModuleImpl {
 
   public bool ShouldActivateModule() {
     bool isVrModeEnabled = !VrModeOnly;
-    isVrModeEnabled |= VRSettings.enabled;
+    isVrModeEnabled |= UnityEngine.XR.XRSettings.enabled;
 
     bool activeState = ModuleController.ShouldActivate() && isVrModeEnabled;
 
