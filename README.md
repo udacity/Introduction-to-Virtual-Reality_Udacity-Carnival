@@ -1,20 +1,25 @@
-# Udacity Carnival Starter Project READ ME
+# Udacity Carnival
+Starter project for the Udacity [VR Developer Nanodegree](http://udacity.com/vr) program.
 
-This project is part of [Udacity](https://www.udacity.com "Udacity - Be in demand")'s [VR Developer Nanodegree](https://www.udacity.com/course/vr-developer-nanodegree--nd017).
+- Course: Introduction to Virtual Reality
+- Project: Udacity Carnival
 
-The end goal of this project is to customize the Udacity Carnival project, which will be something cool that you can show off to your friends and family! The Udacity Carnival consists of 3 Mini-Games: Plinko, Wheel of Fortune, and Coin Toss. With each game, you earn points. When you earn 2000 points, you will receive a virtual classic Carnival prize!
 
-<img src="https://lh3.googleusercontent.com/CEatiFeFgBW3UqlH6SyISQc-j397RspEoS3oGGdf3vn5TidzGS9Op9f1vAoaR1m-1YtoXrURDiEvWa07Loc=s0" width="50%"/>
+### Versions Used
+- [Unity LTS Release 2017.4.4](https://unity3d.com/unity/qa/lts-releases?version=2017.4)
+- [GVR SDK for Unity v1.100.1](https://github.com/googlevr/gvr-unity-sdk/releases/tag/v1.100.1)
+- [TextMesh Pro](https://assetstore.unity.com/packages/essentials/beta-projects/textmesh-pro-84126) v1.0.55
 
-## Versions
-- [Unity Patch 2017.1.0p4](https://unity3d.com/unity/qa/patch-releases?version=2017.1)
-- [GVR Unity SDK v1.70.0](https://github.com/googlevr/gvr-unity-sdk/releases/tag/1.70.0)
-- TextMesh Pro v1.0.55.2017.1.0b12 (*provided*)
 
-## New To Github?
+### Directory Structure
+- The Unity project is the child directory of the repository and named according to the associated lesson.
+- The Unity project is 'cleaned' and includes the `Assets` folder, the `ProjectSettings` folder, and the `UnityPackageManager` folder.
 
-Github is one of the best ways for software developers to store their code and easily make changes that are then tracked and easily shareable with your team of developers. If you would like to learn more about Github, Udacity offers [a free course on how to use Github](https://www.udacity.com/course/how-to-use-git-and-github--ud775). For the puposes of the VR Nanodgree, you will simply need to download this project by:
-1. Clicking **"Clone or download"**
-2. Clicking **"Download ZIP"**
 
-![alt text](https://d17h27t6h515a5.cloudfront.net/topher/2017/October/59f7ae11_usegithub/usegithub.png "How To Download a Project From Github")
+### GVR SDK for Unity
+- `GoogleVR` > `Demos` is not included.
+- `GoogleVR` > `GVRVideoPlayer.unitypackage` is not included.
+- The `Max Reticle Distance` value for the `GvrReticlePointer` used in the scene is set to `20` instead of the default `10`.
+- Scripts applicable to the course have been updated to reflect Unity's API change from `UnityEngine.VR` to `UnityEngine.XR`.
+
+>**Note:** If for any reason you remove and re-import GVR SDK for Unity v1.100.1, make sure you accept any API update pop-up prompts triggered by Unity. Alternatively, you can manually run the API updater (Unity menu `Assets` > `Run API Updater...`) after the import has completed.
