@@ -18,14 +18,24 @@
 /// </summary>
 
 using UnityEngine;
-using UnityEngine.VR;
 using System;
 using System.Runtime.InteropServices;
+
+#if UNITY_2017_2_OR_NEWER
+using UnityEngine.XR;
+#else
+using XRDevice = UnityEngine.VR.VRDevice;
+using XRSettings = UnityEngine.VR.VRSettings;
+#endif  // UNITY_2017_2_OR_NEWER
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif  // UNITY_EDITOR
 
 public static class GvrSettings {
+  /// Name of 'None' VR SDK, as returned by `VRSettings.loadedDeviceName`.
+  public const string VR_SDK_NONE = "None";
+
   /// Name of Daydream GVR SDK, as returned by `VRSettings.loadedDeviceName`.
   public const string VR_SDK_DAYDREAM = "daydream";
 
@@ -155,17 +165,21 @@ public static class GvrSettings {
   /// Wraps call to `VRDevice.GetNativePtr()` and logs error if a supported GVR SDK is not active or
   /// if the returned native pointer is `IntPtr.Zero`.
   public static IntPtr GetValidGvrNativePtrOrLogError() {
-    if (!UnityEngine.XR.XRSettings.enabled) {
+    if (!XRSettings.enabled) {
       Debug.LogError("VR is disabled");
       return IntPtr.Zero;
     }
-    if (UnityEngine.XR.XRSettings.loadedDeviceName != VR_SDK_DAYDREAM
-        && UnityEngine.XR.XRSettings.loadedDeviceName != VR_SDK_CARDBOARD) {
+#if UNITY_2018_3_OR_NEWER
+    string loadedDeviceName = GvrXREventsSubscriber.loadedDeviceName;
+#else // !UNITY_2018_3_OR_NEWER; this leaks 30 bytes of memory per update.
+    string loadedDeviceName = XRSettings.loadedDeviceName;
+#endif // UNITY_2018_3_OR_NEWER
+    if (loadedDeviceName != VR_SDK_DAYDREAM && loadedDeviceName != VR_SDK_CARDBOARD) {
       Debug.LogErrorFormat("Loaded VR SDK '{0}' must be '{1}' or '{2}'",
-          UnityEngine.XR.XRSettings.loadedDeviceName, VR_SDK_DAYDREAM, VR_SDK_CARDBOARD);
+          loadedDeviceName, VR_SDK_DAYDREAM, VR_SDK_CARDBOARD);
       return IntPtr.Zero;
     }
-    IntPtr gvrContextPtr = UnityEngine.XR.XRDevice.GetNativePtr();
+    IntPtr gvrContextPtr = XRDevice.GetNativePtr();
     if (gvrContextPtr == IntPtr.Zero) {
       Debug.LogError("Unexpected zero GVR native context pointer");
       return gvrContextPtr;

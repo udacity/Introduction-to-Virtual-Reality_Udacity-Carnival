@@ -9,7 +9,7 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissioßns and
+// See the License for the specific language governing permissions and
 // limitations under the License.
 
 // This provider is only available on an Android device.
@@ -18,12 +18,17 @@ using Gvr;
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.VR;
+
+#if UNITY_2017_2_OR_NEWER
+using UnityEngine.XR;
+#else
+using XRDevice = UnityEngine.VR.VRDevice;
+#endif  // UNITY_2017_2_OR_NEWER
 
 /// @cond
 namespace Gvr.Internal {
   class AndroidNativeHeadsetProvider : IHeadsetProvider {
-    private IntPtr gvrContextPtr = UnityEngine.XR.XRDevice.GetNativePtr();
+    private IntPtr gvrContextPtr = XRDevice.GetNativePtr();
     private GvrValue gvrValue = new GvrValue();
     private gvr_event_header gvrEventHeader = new gvr_event_header();
     private gvr_recenter_event_data gvrRecenterEventData = new gvr_recenter_event_data();
@@ -32,6 +37,7 @@ namespace Gvr.Internal {
     private GCHandle gvrEventHandle;
     private IntPtr gvrEventPtr;
     private IntPtr gvrPropertiesPtr;
+    private int supportsPositionalTracking = -1;
 
     /// Used only as a temporary placeholder to avoid allocations.
     /// Do not use this for storing state.
@@ -41,7 +47,11 @@ namespace Gvr.Internal {
 
     public bool SupportsPositionalTracking {
       get {
-        return gvr_is_feature_supported(gvrContextPtr, (int)gvr_feature.HeadPose6dof);
+        if (supportsPositionalTracking < 0) {
+          supportsPositionalTracking =
+            gvr_is_feature_supported(gvrContextPtr, (int)gvr_feature.HeadPose6dof) ? 1 : 0;
+        }
+        return supportsPositionalTracking > 0;
       }
     }
 

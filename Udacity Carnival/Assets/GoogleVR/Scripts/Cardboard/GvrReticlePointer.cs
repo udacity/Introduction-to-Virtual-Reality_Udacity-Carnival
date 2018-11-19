@@ -17,6 +17,7 @@ using UnityEngine.EventSystems;
 
 /// Draws a circular reticle in front of any object that the user points at.
 /// The circle dilates if the object is clickable.
+[HelpURL("https://developers.google.com/vr/unity/reference/class/GvrReticlePointer")]
 public class GvrReticlePointer : GvrBasePointer {
   /// The constants below are expsed for testing. Minimum inner angle of the reticle (in degrees).
   public const float RETICLE_MIN_INNER_ANGLE = 0.0f;
@@ -31,7 +32,7 @@ public class GvrReticlePointer : GvrBasePointer {
   public const float RETICLE_DISTANCE_MIN = 0.45f;
 
   /// Maximum distance of the reticle (in meters).
-  public float maxReticleDistance = 10.0f;
+  public float maxReticleDistance = 20.0f;
 
   /// Number of segments making the reticle circle.
   public int reticleSegments = 20;
@@ -112,9 +113,9 @@ public class GvrReticlePointer : GvrBasePointer {
     float outer_diameter = 2.0f * Mathf.Tan(outer_half_angle_radians);
 
     ReticleInnerDiameter =
-      Mathf.Lerp(ReticleInnerDiameter, inner_diameter, Time.deltaTime * reticleGrowthSpeed);
+      Mathf.Lerp(ReticleInnerDiameter, inner_diameter, Time.unscaledDeltaTime * reticleGrowthSpeed);
     ReticleOuterDiameter =
-      Mathf.Lerp(ReticleOuterDiameter, outer_diameter, Time.deltaTime * reticleGrowthSpeed);
+      Mathf.Lerp(ReticleOuterDiameter, outer_diameter, Time.unscaledDeltaTime * reticleGrowthSpeed);
 
     MaterialComp.SetFloat("_InnerDiameter", ReticleInnerDiameter * ReticleDistanceInMeters);
     MaterialComp.SetFloat("_OuterDiameter", ReticleOuterDiameter * ReticleDistanceInMeters);

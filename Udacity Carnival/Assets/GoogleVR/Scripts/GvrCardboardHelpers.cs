@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using UnityEngine;
-using UnityEngine.VR;
 
 using System;
 using System.Runtime.InteropServices;
@@ -25,7 +24,11 @@ public class GvrCardboardHelpers {
   /// Do not use for Daydream apps as controller based recentering is handled automatically by
   /// Google VR Services, see `GvrControllerInput.Rencentered` for details.
   public static void Recenter() {
-#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+#if UNITY_EDITOR
+    if (GvrEditorEmulator.Instance != null) {
+      GvrEditorEmulator.Instance.Recenter();
+    }
+#elif (UNITY_ANDROID || UNITY_IOS)
     IntPtr gvrContextPtr = GvrSettings.GetValidGvrNativePtrOrLogError();
     if (gvrContextPtr == IntPtr.Zero) {
       return;

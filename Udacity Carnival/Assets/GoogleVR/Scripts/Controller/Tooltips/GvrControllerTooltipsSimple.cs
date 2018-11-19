@@ -20,6 +20,7 @@ using System.Collections;
 
 /// A lightweight tooltip designed to minimize draw calls.
 [ExecuteInEditMode]
+[HelpURL("https://developers.google.com/vr/unity/reference/class/GvrControllerTooltipsSimple")]
 public class GvrControllerTooltipsSimple : MonoBehaviour, IGvrArmModelReceiver {
 
   private MeshRenderer tooltipRenderer;
@@ -63,7 +64,6 @@ public class GvrControllerTooltipsSimple : MonoBehaviour, IGvrArmModelReceiver {
   }
 
   protected void OnVisualUpdate () {
-
     float alpha = ArmModel != null ? ArmModel.TooltipAlphaValue : 1.0f;
     materialPropertyBlock.SetColor(colorId, new Color(1,1,1,alpha));
     tooltipRenderer.SetPropertyBlock(materialPropertyBlock);
