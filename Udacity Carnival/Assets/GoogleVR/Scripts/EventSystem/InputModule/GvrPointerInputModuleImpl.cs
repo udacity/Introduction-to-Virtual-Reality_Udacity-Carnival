@@ -14,7 +14,12 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.VR;
+
+#if UNITY_2017_2_OR_NEWER
+using UnityEngine.XR;
+#else
+using XRSettings = UnityEngine.VR.VRSettings;
+#endif  // UNITY_2017_2_OR_NEWER
 
 /// Implementation of _GvrPointerInputModule_
 public class GvrPointerInputModuleImpl {
@@ -60,7 +65,7 @@ public class GvrPointerInputModuleImpl {
 
   public bool ShouldActivateModule() {
     bool isVrModeEnabled = !VrModeOnly;
-    isVrModeEnabled |= UnityEngine.XR.XRSettings.enabled;
+    isVrModeEnabled |= XRSettings.enabled;
 
     bool activeState = ModuleController.ShouldActivate() && isVrModeEnabled;
 
@@ -149,11 +154,16 @@ public class GvrPointerInputModuleImpl {
     // Set the position to the center of the camera.
     // This is only necessary if using the built-in Unity raycasters.
     RaycastResult raycastResult;
-    CurrentEventData.position = GvrMathHelpers.GetViewportCenter();
+    CurrentEventData.position = GvrVRHelpers.GetViewportCenter();
     bool isPointerActiveAndAvailable = IsPointerActiveAndAvailable();
     if (isPointerActiveAndAvailable) {
       RaycastAll();
       raycastResult = ModuleController.FindFirstRaycast(ModuleController.RaycastResultCache);
+      if (Pointer.ControllerInputDevice == null || Pointer.ControllerInputDevice.IsDominantHand) {
+        CurrentEventData.pointerId = (int)GvrControllerHand.Dominant;
+      } else {
+        CurrentEventData.pointerId = (int)GvrControllerHand.NonDominant;
+      }
     } else {
       raycastResult = new RaycastResult();
       raycastResult.Clear();
@@ -315,19 +325,21 @@ public class GvrPointerInputModuleImpl {
       EventExecutor.Execute(CurrentEventData.pointerPress, CurrentEventData, ExecuteEvents.pointerClickHandler);
     }
 
-    if (CurrentEventData.pointerDrag != null && CurrentEventData.dragging) {
+    if (CurrentEventData != null && CurrentEventData.pointerDrag != null && CurrentEventData.dragging) {
       EventExecutor.ExecuteHierarchy(go, CurrentEventData, ExecuteEvents.dropHandler);
       EventExecutor.Execute(CurrentEventData.pointerDrag, CurrentEventData, ExecuteEvents.endDragHandler);
     }
 
-    // Clear the click state.
-    CurrentEventData.pointerPress = null;
-    CurrentEventData.rawPointerPress = null;
-    CurrentEventData.eligibleForClick = false;
-    CurrentEventData.clickCount = 0;
-    CurrentEventData.clickTime = 0;
-    CurrentEventData.pointerDrag = null;
-    CurrentEventData.dragging = false;
+    if (CurrentEventData != null) {
+      // Clear the click state.
+      CurrentEventData.pointerPress = null;
+      CurrentEventData.rawPointerPress = null;
+      CurrentEventData.eligibleForClick = false;
+      CurrentEventData.clickCount = 0;
+      CurrentEventData.clickTime = 0;
+      CurrentEventData.pointerDrag = null;
+      CurrentEventData.dragging = false;
+    }
   }
 
   private void HandleTriggerDown() {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using UnityEngine;
-using UnityEngine.VR;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -26,6 +25,7 @@ using Gvr.Internal;
 /// such prefab in a scene.
 ///
 /// This is a singleton object.
+[HelpURL("https://developers.google.com/vr/unity/reference/class/GvrHeadset")]
 public class GvrHeadset : MonoBehaviour {
   private static GvrHeadset instance;
 
@@ -79,7 +79,7 @@ public class GvrHeadset : MonoBehaviour {
   }
 #endregion  // DELEGATE_HANDLERS
 
-#region GVR_STANDALONE_PROPERTIES
+#region GVR_HEADSET_PROPERTIES
   /// Returns |true| if the current headset supports positionally tracked, 6DOF head poses.
   /// Returns |false| if only rotation-based head poses are supported.
   public static bool SupportsPositionalTracking {
@@ -87,7 +87,13 @@ public class GvrHeadset : MonoBehaviour {
       if (instance == null) {
         return false;
       }
-      return instance.headsetProvider.SupportsPositionalTracking;
+      try {
+        return instance.headsetProvider.SupportsPositionalTracking;
+      }
+      catch(Exception e) {
+        Debug.LogError("Error reading SupportsPositionalTracking: " + e.Message);
+        return false;
+      }
     }
   }
 
@@ -144,17 +150,13 @@ public class GvrHeadset : MonoBehaviour {
     }
     return instance.headsetProvider.TryGetSafetyCylinderOuterRadius(ref outerRadius);
   }
-#endregion  // GVR_STANDALONE_PROPERTIES
+#endregion  // GVR_HEADSET_PROPERTIES
 
   private GvrHeadset() {
     headsetState.Initialize();
   }
 
   void Awake() {
-    if (!SupportsPositionalTracking) {
-      return;
-    }
-
     if (instance != null) {
       Debug.LogError("More than one GvrHeadset instance was found in your scene. "
         + "Ensure that there is only one GvrHeadset.");

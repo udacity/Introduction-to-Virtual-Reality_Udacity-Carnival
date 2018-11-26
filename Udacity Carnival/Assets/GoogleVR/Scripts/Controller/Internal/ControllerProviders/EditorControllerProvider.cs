@@ -9,7 +9,7 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissioßns and
+// See the License for the specific language governing permissions and
 // limitations under the License.
 
 // This provider is only available in the editor.
@@ -35,13 +35,21 @@ namespace Gvr.Internal {
     public bool SupportsBatteryStatus {
       get { return emulatorControllerProvider.SupportsBatteryStatus; }
     }
+    public int MaxControllerCount {
+      get { return 1; }
+    }
 
     internal EditorControllerProvider(GvrControllerInput.EmulatorConnectionMode connectionMode) {
       emulatorControllerProvider = new EmulatorControllerProvider(connectionMode);
       mouseControllerProvider = new MouseControllerProvider();
     }
 
-    public void ReadState(ControllerState outState) {
+    public void Dispose() {}
+
+    public void ReadState(ControllerState outState, int controller_id) {
+      if (controller_id != 0) {
+        return;
+      }
 #if UNITY_HAS_GOOGLEVR
       if (InstantPreview.Instance != null
           && InstantPreview.Instance.IsCurrentlyConnected
@@ -54,8 +62,8 @@ namespace Gvr.Internal {
 
       // If Instant Preview is not connected, tries to use the emulator or
       // mouse.
-      emulatorControllerProvider.ReadState(emulatorState);
-      mouseControllerProvider.ReadState(mouseState);
+      emulatorControllerProvider.ReadState(emulatorState, controller_id);
+      mouseControllerProvider.ReadState(mouseState, controller_id);
 
       // Defaults to mouse state if the emulator isn't available.
       if (emulatorState.connectionState != GvrConnectionState.Connected

@@ -9,7 +9,7 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissioßns and
+// See the License for the specific language governing permissions and
 // limitations under the License.
 
 using Gvr;
@@ -23,8 +23,12 @@ namespace Gvr.Internal {
     public bool SupportsBatteryStatus {
       get { return false; }
     }
+    public int MaxControllerCount {
+      get { return 1; }
+    }
     internal DummyControllerProvider() {}
-    public void ReadState(ControllerState outState) {
+    public void Dispose() {}
+    public void ReadState(ControllerState outState,int controller_id) {
       outState.CopyFrom(dummyState);
     }
     public void OnPause() {}

@@ -9,7 +9,7 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissioßns and
+// See the License for the specific language governing permissions and
 // limitations under the License.
 
 using UnityEngine;
@@ -37,7 +37,7 @@ namespace Gvr.Internal {
       Debug.LogWarning("No Google VR standalone headset / 6DOF support on " +
           Application.platform + " platform.");
       return new DummyHeadsetProvider();
-#endif  // UNITY_EDITOR || UNITY_STANDALONE
+#endif  // UNITY_EDITOR || UNITY_ANDROID
     }
   }
 }

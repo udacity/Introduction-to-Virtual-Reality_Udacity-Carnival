@@ -16,9 +16,14 @@
 // full VR Keyboard.
 
 using UnityEngine;
-using UnityEngine.VR;
 using System;
 using System.Runtime.InteropServices;
+
+#if UNITY_2017_2_OR_NEWER
+using UnityEngine.XR;
+#else
+using UnityEngine.VR;
+#endif  // UNITY_2017_2_OR_NEWER
 
 /// @cond
 namespace Gvr.Internal {
@@ -96,6 +101,10 @@ namespace Gvr.Internal {
     [DllImport(dllName)]
     private static extern bool gvr_keyboard_update_controller_ray(IntPtr keyboard_context, IntPtr vector3Start,
       IntPtr vector3End, IntPtr vector3Hit);
+
+    // Updates the touch state of the controller.
+    [DllImport(dllName)]
+    private static extern void gvr_keyboard_update_controller_touch(IntPtr keyboard_context, bool touched, IntPtr vector2Pos);
 
     // Returns the EditText with for the keyboard.
     [DllImport (dllName)]
@@ -195,7 +204,6 @@ namespace Gvr.Internal {
         isValid = true;
       }
 #endif // UNITY_ANDROID && !UNITY_EDITOR
-      UnityEngine.XR.InputTracking.disablePositionalTracking = true;
       renderEventFunction = GetKeyboardRenderEventFunc();
     }
 
@@ -229,6 +237,7 @@ namespace Gvr.Internal {
       Marshal.StructureToPtr(matToSet, mat_ptr, true);
       gvr_keyboard_set_world_from_keyboard_matrix(keyboard_context, mat_ptr);
       gvr_keyboard_show(keyboard_context);
+      Marshal.FreeHGlobal(mat_ptr);
     }
 
     public void UpdateData() {
@@ -237,31 +246,46 @@ namespace Gvr.Internal {
       // Update controller state.
       GvrBasePointer pointer = GvrPointerInputModule.Pointer;
       bool isPointerAvailable = pointer != null && pointer.IsAvailable;
-      if (isPointerAvailable && GvrControllerInput.State == GvrConnectionState.Connected) {
-        bool pressed = GvrControllerInput.ClickButton;
-        gvr_keyboard_update_button_state(keyboard_context, kGvrControllerButtonClick, pressed);
+      if (isPointerAvailable) {
+        GvrControllerInputDevice controllerInputDevice = pointer.ControllerInputDevice;
+        if (controllerInputDevice != null && controllerInputDevice.State == GvrConnectionState.Connected) {
+          bool pressed = controllerInputDevice.GetButton(GvrControllerButton.TouchPadButton);
+          gvr_keyboard_update_button_state(keyboard_context, kGvrControllerButtonClick, pressed);
 
-        GvrBasePointer.PointerRay pointerRay = pointer.GetRayForDistance(currentDistance);
+          // Update touch state
+          Vector2 touch_pos = controllerInputDevice.TouchPos;
+          IntPtr touch_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(touch_pos));
+          Marshal.StructureToPtr(touch_pos, touch_ptr, true);
+          bool isTouching = controllerInputDevice.GetButton(GvrControllerButton.TouchPadTouch);
+          gvr_keyboard_update_controller_touch(keyboard_context, isTouching, touch_ptr);
 
-        Vector3 startPoint = pointerRay.ray.origin;
-        // Need to flip Z for native library
-        startPoint.z *= -1;
-        IntPtr start_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(startPoint));
-        Marshal.StructureToPtr(startPoint, start_ptr, true);
+          GvrBasePointer.PointerRay pointerRay = pointer.GetRayForDistance(currentDistance);
 
-        Vector3 endPoint = pointerRay.ray.GetPoint(pointerRay.distance);
-        // Need to flip Z for native library
-        endPoint.z *= -1;
-        IntPtr end_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(endPoint));
-        Marshal.StructureToPtr(endPoint, end_ptr, true);
+          Vector3 startPoint = pointerRay.ray.origin;
+          // Need to flip Z for native library
+          startPoint.z *= -1;
+          IntPtr start_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(startPoint));
+          Marshal.StructureToPtr(startPoint, start_ptr, true);
 
-        Vector3 hit = Vector3.one;
-        IntPtr hit_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(Vector3.zero));
-        Marshal.StructureToPtr(Vector3.zero, hit_ptr, true);
+          Vector3 endPoint = pointerRay.ray.GetPoint(pointerRay.distance);
+          // Need to flip Z for native library
+          endPoint.z *= -1;
+          IntPtr end_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(endPoint));
+          Marshal.StructureToPtr(endPoint, end_ptr, true);
 
-        gvr_keyboard_update_controller_ray(keyboard_context, start_ptr, end_ptr, hit_ptr);
-        hit = (Vector3)Marshal.PtrToStructure(hit_ptr, typeof(Vector3));
-        hit.z *= -1;
+          Vector3 hit = Vector3.one;
+          IntPtr hit_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(Vector3.zero));
+          Marshal.StructureToPtr(Vector3.zero, hit_ptr, true);
+
+          gvr_keyboard_update_controller_ray(keyboard_context, start_ptr, end_ptr, hit_ptr);
+          hit = (Vector3)Marshal.PtrToStructure(hit_ptr, typeof(Vector3));
+          hit.z *= -1;
+
+          Marshal.FreeHGlobal(touch_ptr);
+          Marshal.FreeHGlobal(hit_ptr);
+          Marshal.FreeHGlobal(end_ptr);
+          Marshal.FreeHGlobal(start_ptr);
+        }
       }
 #endif  // UNITY_ANDROID && !UNITY_EDITOR
 
@@ -310,6 +334,7 @@ namespace Gvr.Internal {
       gvr_keyboard_get_recommended_world_from_keyboard_matrix(distance, mat_ptr);
 
       result = (Matrix4x4) Marshal.PtrToStructure(mat_ptr, typeof(Matrix4x4));
+      Marshal.FreeHGlobal(mat_ptr);
 
       return result;
     }

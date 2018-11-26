@@ -58,6 +58,7 @@ public enum GvrKeyboardInputMode {
 
 // Handles keyboard state management such as hiding and displaying
 // the keyboard, directly modifying text and stereoscopic rendering.
+[HelpURL("https://developers.google.com/vr/unity/reference/class/GvrKeyboard")]
 public class GvrKeyboard : MonoBehaviour {
 
   private static GvrKeyboard instance;
@@ -97,6 +98,7 @@ public class GvrKeyboard : MonoBehaviour {
 
   public string EditorText {
     get { return instance != null ? instance.keyboardState.editorText : string.Empty; }
+    set { keyboardProvider.EditorText = value; }
   }
 
   public GvrKeyboardInputMode Mode {
@@ -130,6 +132,7 @@ public class GvrKeyboard : MonoBehaviour {
 
   void OnDestroy() {
     instance = null;
+    threadSafeCallbacks.Clear();
   }
 
   // Use this for initialization.
@@ -312,6 +315,7 @@ public class GvrKeyboard : MonoBehaviour {
     }
   }
 
+  [AOT.MonoPInvokeCallback(typeof(GvrKeyboardEvent))]
   private static void OnKeyboardCallback(IntPtr closure, GvrKeyboardEvent keyboardEvent) {
     lock (callbacksLock) {
       threadSafeCallbacks.Add(keyboardEvent);

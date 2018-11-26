@@ -24,6 +24,7 @@ using UnityEngine.UI;
 /// View GvrBasePointerRaycaster.cs and GvrPointerInputModule.cs for more details.
 [AddComponentMenu("GoogleVR/GvrPointerGraphicRaycaster")]
 [RequireComponent(typeof(Canvas))]
+[HelpURL("https://developers.google.com/vr/unity/reference/class/GvrPointerGraphicRaycaster")]
 public class GvrPointerGraphicRaycaster : GvrBasePointerRaycaster {
   public enum BlockingObjects {
     None = 0,
@@ -35,7 +36,7 @@ public class GvrPointerGraphicRaycaster : GvrBasePointerRaycaster {
   private const int NO_EVENT_MASK_SET = -1;
 
   public bool ignoreReversedGraphics = true;
-  public BlockingObjects blockingObjects = BlockingObjects.None;
+  public BlockingObjects blockingObjects = BlockingObjects.ThreeD;
   public LayerMask blockingMask = NO_EVENT_MASK_SET;
 
   private Canvas targetCanvas;
@@ -135,13 +136,13 @@ public class GvrPointerGraphicRaycaster : GvrBasePointerRaycaster {
         float rayDot = Vector3.Dot(transForward, pointerRay.ray.direction);
         resultDistance = transDot / rayDot;
         Vector3 hitPosition = pointerRay.ray.origin + (pointerRay.ray.direction * resultDistance);
-        resultDistance = resultDistance + pointerRay.distanceFromStart;
 
         // Check to see if the go is behind the camera.
         if (resultDistance < 0 || resultDistance >= hitDistance || resultDistance > pointerRay.distance) {
           continue;
         }
 
+        resultDistance = resultDistance + pointerRay.distanceFromStart;
         Transform pointerTransform =
           GvrPointerInputModule.Pointer.PointerTransform;
         float delta = (hitPosition - pointerTransform.position).magnitude;
