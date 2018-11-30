@@ -1,47 +1,77 @@
 fileFormatVersion: 2
 guid: 89f0137620f6af44b9ba852b4190e64e
-timeCreated: 1488610019
-licenseType: Store
 PluginImporter:
-  serializedVersion: 1
+  externalObjects: {}
+  serializedVersion: 2
   iconMap: {}
   executionOrder: {}
   isPreloaded: 0
+  isOverridable: 0
   platformData:
-    Any:
+  - first:
+      '': OSXIntel
+    second:
+      enabled: 0
+      settings:
+        CPU: AnyCPU
+  - first:
+      '': OSXIntel64
+    second:
+      enabled: 0
+      settings:
+        CPU: AnyCPU
+  - first:
+      Any: 
+    second:
       enabled: 0
       settings: {}
-    Editor:
+  - first:
+      Editor: Editor
+    second:
       enabled: 1
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
         OS: AnyOS
-    Linux:
+  - first:
+      Facebook: Win
+    second:
+      enabled: 0
+      settings:
+        CPU: AnyCPU
+  - first:
+      Facebook: Win64
+    second:
+      enabled: 0
+      settings:
+        CPU: AnyCPU
+  - first:
+      Standalone: Linux
+    second:
       enabled: 0
       settings:
         CPU: x86
-    Linux64:
+  - first:
+      Standalone: Linux64
+    second:
       enabled: 0
       settings:
         CPU: x86_64
-    OSXIntel:
+  - first:
+      Standalone: Win
+    second:
       enabled: 0
       settings:
         CPU: AnyCPU
-    OSXIntel64:
+  - first:
+      Standalone: Win64
+    second:
       enabled: 0
       settings:
         CPU: AnyCPU
-    Win:
-      enabled: 0
-      settings:
-        CPU: AnyCPU
-    Win64:
-      enabled: 0
-      settings:
-        CPU: AnyCPU
-    WindowsStoreApps:
+  - first:
+      Windows Store Apps: WindowsStoreApps
+    second:
       enabled: 0
       settings:
         CPU: AnyCPU
