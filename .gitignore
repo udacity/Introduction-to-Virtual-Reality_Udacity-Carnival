@@ -35,6 +35,10 @@ ehthumbs.db
 */sysinfo.txt
 */*.stackdump
 
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+
 
 # ============================================================================ #
 # Visual Studio / MonoDevelop Generated                                        #
