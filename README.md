@@ -1,5 +1,5 @@
 # Udacity Carnival
-Starter project for the Udacity [VR Developer Nanodegree](http://udacity.com/vr) program.
+Starter project for the Udacity [VR Foundations Nanodegree](https://www.udacity.com/course/vr-foundations-nanodegree--nd105) program.
 
 - Course: Introduction to Virtual Reality
 - Project: Udacity Carnival
